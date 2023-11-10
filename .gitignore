@@ -20,3 +20,6 @@ data.json
 
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
+
+# Dont want no yarn files
+.yarn
