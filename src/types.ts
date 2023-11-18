@@ -33,7 +33,10 @@ export const DndCharacterTemplateRawSchema = z.object({
 export const DndCharacterRawSchema = z.object({
     id: z.string().min(1, { message: REQUIRED_MESSAGE }),
     isPlayer: z.boolean(),
-    template: z.string().optional()
+    template: z.string().optional(),
+    alignment: z.string().optional(),
+    size: z.string().optional(),
+    race: z.string().optional(),
 })
 
 export const DndDiceRegexGroupsSchema = z.object({
@@ -57,3 +60,4 @@ export type DndCharacterTemplate = Omit<DndCharacterTemplateRaw, 'actions'> & { 
 export type DndCharacter = Omit<DndCharacterRaw, 'template'> & { template?: DndCharacterTemplate }
 export type DndDiceData = { die: number, multiplier: number, modifier?: number }
 export type ParseErrorTypeIndicator = 'CharacterTemplate' | 'Character' | 'Action'
+export type Stat = 'hp' | 'ac' | 'str' | 'int' | 'wis' | 'cha' | 'con' | 'dex'

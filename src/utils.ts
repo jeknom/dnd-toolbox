@@ -143,6 +143,20 @@ async function loadDndAction(
     )
 }
 
+export function validateDndCharacterTemplate(data: unknown) {
+    const validation = DndCharacterTemplateRawSchema.safeParse(data)
+    let characterTemplate: DndCharacterTemplateRaw | null = null
+    let error: ZodError<DndCharacterRaw> | null = null
+
+    if (validation.success) {
+        characterTemplate = validation.data
+    } else {
+        error = validation.error
+    }
+
+    return { characterTemplate, error }
+}
+
 /**
  * Loads all character template blocks from a file and adds them to the provided character templates map.
  */
@@ -158,19 +172,34 @@ async function loadDndCharacterTemplate(
         'CharacterTemplate',
         errors,
         (templateRaw) => {
-            const validation = DndCharacterTemplateRawSchema.safeParse(templateRaw)
-
-            if (validation.success) {
-                const { actions: templateActions, id, stats, modifiers } = validation.data
+            const { characterTemplate, error } = validateDndCharacterTemplate(templateRaw)
+            if (characterTemplate !== null) {
+                const { actions: templateActions, id } = characterTemplate
                 const charActions = (templateActions ?? [])
                     .map(a => actions.get(a))
                     .filter(a => a !== undefined) as DndActionRaw[]
-                characterTemplates.set(id, { id, stats, modifiers, actions: charActions })
-            } else {
-                updateErrors(file, validation.error, errors)
+                characterTemplates.set(id, { ...characterTemplate, actions: charActions })
+            }
+
+            if (error !== null) {
+                updateErrors(file, error, errors)
             }
         }
     )
+}
+
+export function validateDndCharacter(data: unknown) {
+    const validation = DndCharacterRawSchema.safeParse(data)
+    let character: DndCharacterRaw | null = null
+    let error: ZodError<DndCharacterRaw> | null = null
+
+    if (validation.success) {
+        character = validation.data
+    } else {
+        error = validation.error
+    }
+
+    return { character, error }
 }
 
 /**
@@ -188,15 +217,22 @@ async function loadDndCharacter(
         'Character',
         errors,
         (characterRaw) => {
-            const validation = DndCharacterRawSchema.safeParse(characterRaw)
+            const { character, error } = validateDndCharacter(characterRaw)
 
-            if (validation.success) {
-                const { id, isPlayer, template } = validation.data
-                const charTemplate = template !== undefined ? characterTemplates.get(template) : undefined
-
-                characters.set(id, { id, template: charTemplate, isPlayer })
-            } else {
-                updateErrors(file, validation.error, errors)
+            if (character !== null) {
+                characters.set(
+                    character.id,
+                    { 
+                        ...character,
+                        template: character.template !== undefined
+                            ? characterTemplates.get(character.template)
+                            : undefined 
+                    }
+                )
+            }
+            
+            if (error !== null) {
+                updateErrors(file, error, errors)
             }
         })
 }

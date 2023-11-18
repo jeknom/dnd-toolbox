@@ -1,8 +1,9 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import type { DndActionRaw, DndCharacter, DndCharacterTemplate } from 'src/types';
-import { loadAllData, validateDndAction } from 'src/utils';
+import { loadAllData, validateDndAction, validateDndCharacter } from 'src/utils';
 import Action from 'src/components/DndAction.svelte'
 import ErrorBox from 'src/components/ErrorBox.svelte'
+import Character from 'src/components/Character.svelte'
 import { parse } from 'yaml';
 
 // Remember to rename these classes and interfaces!
@@ -31,17 +32,11 @@ export default class DndToolboxPlugin extends Plugin {
 				new Notice(issue.message, 5000)
 			}
 		}
-
-		if (errors.length === 0) {
-			new Notice('DnD data loaded successfully')
-		}
 	}
 
 	async onload() {
 		await this.loadSettings();
 
-		// DEFAULT PLUGIN STUFF
-		// // This creates an icon in the left ribbon.
 		this.addRibbonIcon('swords', 'Start encounter', async (evt: MouseEvent) => {
 			new Notice('TODO')
 		});
@@ -66,6 +61,31 @@ export default class DndToolboxPlugin extends Plugin {
 				})
 			}
 		})
+
+		this.registerMarkdownCodeBlockProcessor('dnd-character', async (source, el, ctx) => {
+			const { character, error } = validateDndCharacter(parse(source))
+			await this.handleLoadAllData()
+
+			if (error !== null) {
+				new ErrorBox({
+					target: el,
+					props: {
+						error
+					}
+				})
+			} else {
+				new Character({
+					target: el,
+					props: {
+						character: {
+							...character,
+							template: character?.template !== undefined ? this.characterTemplates.get(character?.template) : undefined
+						}
+					}
+				})
+			}
+		})
+
 		// // Perform additional things with the ribbon
 		// ribbonIconEl.addClass('my-plugin-ribbon-class');
 

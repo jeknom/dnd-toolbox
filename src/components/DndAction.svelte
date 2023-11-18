@@ -19,6 +19,10 @@
 </div>
 
 <style>
+	p {
+		margin: 0px;
+	}
+
 	.action {
 		display: flex;
 		flex-direction: column;
