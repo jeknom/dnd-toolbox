@@ -36,6 +36,17 @@ export const DndCharacterRawSchema = z.object({
     template: z.string().optional()
 })
 
+export const DndDiceRegexGroupsSchema = z.object({
+    die: z.string().min(1, { message: REQUIRED_MESSAGE }),
+    multiplier: z.string().min(1, { message: REQUIRED_MESSAGE }),
+    operator: z.literal('+').or(z.literal('-')).optional(),
+    modifier: z.string().min(1, { message: REQUIRED_MESSAGE }).optional()
+})
+
+export const DndToHitRegexGroupsSchema = z.object({
+    toHit: z.string().min(1, { message: REQUIRED_MESSAGE })
+})
+
 export type DndActionRaw = z.infer<typeof DndActionRawSchema>
 export type DndStatsRaw = z.infer<typeof DndStatsRawSchema>
 export type DndAbilityModifiersRaw = z.infer<typeof DndAbilityModifiersRawSchema>
@@ -44,4 +55,5 @@ export type DndCharacterRaw = z.infer<typeof DndCharacterRawSchema>
 
 export type DndCharacterTemplate = Omit<DndCharacterTemplateRaw, 'actions'> & { actions: DndActionRaw[] }
 export type DndCharacter = Omit<DndCharacterRaw, 'template'> & { template?: DndCharacterTemplate }
+export type DndDiceData = { die: number, multiplier: number, modifier?: number }
 export type ParseErrorTypeIndicator = 'CharacterTemplate' | 'Character' | 'Action'

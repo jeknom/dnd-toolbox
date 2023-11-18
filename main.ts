@@ -1,6 +1,9 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import type { DndActionRaw, DndCharacter, DndCharacterTemplate } from 'src/types';
-import { loadAllData } from 'src/utils';
+import { loadAllData, validateDndAction } from 'src/utils';
+import Action from 'src/components/DndAction.svelte'
+import ErrorBox from 'src/components/ErrorBox.svelte'
+import { parse } from 'yaml';
 
 // Remember to rename these classes and interfaces!
 
@@ -12,32 +15,57 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
+export default class DndToolboxPlugin extends Plugin {
 	settings: MyPluginSettings;
 	actions: Map<string, DndActionRaw> = new Map()
 	characterTemplates: Map<string, DndCharacterTemplate> = new Map()
 	characters: Map<string, DndCharacter> = new Map()
+
+	async handleLoadAllData() {
+		const files = this.app.vault.getFiles()
+		
+		const { errors } = await loadAllData(files, this.actions, this.characterTemplates, this.characters)
+
+		for (const error of errors) {
+			for (const issue of error.errors) {
+				new Notice(issue.message, 5000)
+			}
+		}
+
+		if (errors.length === 0) {
+			new Notice('DnD data loaded successfully')
+		}
+	}
 
 	async onload() {
 		await this.loadSettings();
 
 		// DEFAULT PLUGIN STUFF
 		// // This creates an icon in the left ribbon.
-		this.addRibbonIcon('swords', 'Load DnD resources', async (evt: MouseEvent) => {
-			const files = this.app.vault.getFiles()
-		
-			const { errors } = await loadAllData(files, this.actions, this.characterTemplates, this.characters)
-
-			for (const error of errors) {
-				for (const issue of error.errors) {
-					new Notice(issue.message, 5000)
-				}
-			}
-
-			if (errors.length === 0) {
-				new Notice('DnD data loaded successfully')
-			}
+		this.addRibbonIcon('swords', 'Start encounter', async (evt: MouseEvent) => {
+			new Notice('TODO')
 		});
+
+		this.registerMarkdownCodeBlockProcessor('dnd-action', async (source, el, ctx) => {
+			const { action, error } = validateDndAction(parse(source))
+			await this.handleLoadAllData()
+
+			if (error !== null) {
+				new ErrorBox({
+					target: el,
+					props: {
+						error
+					}
+				})
+			} else {
+				new Action({
+					target: el,
+					props: {
+						action
+					}
+				})
+			}
+		})
 		// // Perform additional things with the ribbon
 		// ribbonIconEl.addClass('my-plugin-ribbon-class');
 
