@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-import type { DndAction, DndCharacter, DndCharacterTemplate } from 'src/types';
+import type { DndActionRaw, DndCharacter, DndCharacterTemplate } from 'src/types';
 import { loadAllData } from 'src/utils';
 
 // Remember to rename these classes and interfaces!
@@ -14,25 +14,30 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
-	actions: Map<string, DndAction> = new Map()
+	actions: Map<string, DndActionRaw> = new Map()
 	characterTemplates: Map<string, DndCharacterTemplate> = new Map()
 	characters: Map<string, DndCharacter> = new Map()
 
 	async onload() {
 		await this.loadSettings();
 
-		const files = this.app.vault.getFiles()
-		
-		await loadAllData(files, this.actions, this.characterTemplates, this.characters)
-
-		console.log({ tmpl: this.characterTemplates, chars: this.characters, actions: this.actions })
-
 		// DEFAULT PLUGIN STUFF
 		// // This creates an icon in the left ribbon.
-		// const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-		// 	// Called when the user clicks the icon.
-		// 	new Notice('This is a notice!');
-		// });
+		this.addRibbonIcon('swords', 'Load DnD resources', async (evt: MouseEvent) => {
+			const files = this.app.vault.getFiles()
+		
+			const { errors } = await loadAllData(files, this.actions, this.characterTemplates, this.characters)
+
+			for (const error of errors) {
+				for (const issue of error.errors) {
+					new Notice(issue.message, 5000)
+				}
+			}
+
+			if (errors.length === 0) {
+				new Notice('DnD data loaded successfully')
+			}
+		});
 		// // Perform additional things with the ribbon
 		// ribbonIconEl.addClass('my-plugin-ribbon-class');
 
