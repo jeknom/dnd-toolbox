@@ -56,8 +56,15 @@ export type DndAbilityModifiersRaw = z.infer<typeof DndAbilityModifiersRawSchema
 export type DndCharacterTemplateRaw = z.infer<typeof DndCharacterTemplateRawSchema>
 export type DndCharacterRaw = z.infer<typeof DndCharacterRawSchema>
 
+export type DndToolboxState = {
+	actions: Map<string, DndActionRaw>
+	characterTemplates: Map<string, DndCharacterTemplate>
+	characters: Map<string, DndCharacter>
+}
 export type DndCharacterTemplate = Omit<DndCharacterTemplateRaw, 'actions'> & { actions: DndActionRaw[] }
 export type DndCharacter = Omit<DndCharacterRaw, 'template'> & { template?: DndCharacterTemplate }
 export type DndDiceData = { die: number, multiplier: number, modifier?: number }
+export type DndStat = 'hp' | 'ac' | 'str' | 'int' | 'wis' | 'cha' | 'con' | 'dex'
+export type DndCombatant = { id: string, initiative: number, character: DndCharacter }
+export type DndEncounter = { hasStarted: boolean, combatants: DndCombatant[] }
 export type ParseErrorTypeIndicator = 'CharacterTemplate' | 'Character' | 'Action'
-export type Stat = 'hp' | 'ac' | 'str' | 'int' | 'wis' | 'cha' | 'con' | 'dex'

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Stat } from "src/types";
+	import { DndStat } from "src/types";
 
-    export let stat: Stat
+    export let stat: DndStat
     export let value: number
 
     let statPrefix = stat.toUpperCase()

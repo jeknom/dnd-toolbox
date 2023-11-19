@@ -1,10 +1,13 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-import type { DndActionRaw, DndCharacter, DndCharacterTemplate } from 'src/types';
+import { Notice, Plugin, WorkspaceLeaf } from 'obsidian';
+import type { DndActionRaw, DndCharacter, DndCharacterTemplate, DndToolboxState } from 'src/types';
 import { loadAllData, validateDndAction, validateDndCharacter } from 'src/utils';
 import Action from 'src/components/DndAction.svelte'
 import ErrorBox from 'src/components/ErrorBox.svelte'
-import Character from 'src/components/Character.svelte'
+import Character from './src/components/Character.svelte'
 import { parse } from 'yaml';
+import { DND_ACTION_LANG, DND_CHARACTER_LANG, ENCOUNTER_VIEW } from 'src/constants';
+import * as commands from './src/commands'
+import EncounterView from 'src/views/EncounterView';
 
 // Remember to rename these classes and interfaces!
 
@@ -18,14 +21,24 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class DndToolboxPlugin extends Plugin {
 	settings: MyPluginSettings;
-	actions: Map<string, DndActionRaw> = new Map()
-	characterTemplates: Map<string, DndCharacterTemplate> = new Map()
-	characters: Map<string, DndCharacter> = new Map()
+	state: DndToolboxState = {
+		actions: new Map(),
+		characterTemplates: new Map(),
+		characters: new Map()
+	}
 
 	async handleLoadAllData() {
 		const files = this.app.vault.getFiles()
 		
-		const { errors } = await loadAllData(files, this.actions, this.characterTemplates, this.characters)
+		this.state.actions.clear()
+		this.state.characterTemplates.clear()
+		this.state.characters.clear()
+
+		const { errors } = await loadAllData(
+			files,
+			this.state.actions,
+			this.state.characterTemplates,
+			this.state.characters)
 
 		for (const error of errors) {
 			for (const issue of error.errors) {
@@ -36,14 +49,31 @@ export default class DndToolboxPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+		await this.handleLoadAllData()
+
+		this.registerView(ENCOUNTER_VIEW, (leaf) => new EncounterView(leaf, this))
 
 		this.addRibbonIcon('swords', 'Start encounter', async (evt: MouseEvent) => {
-			new Notice('TODO')
+			const existingLeaves = this.app.workspace.getLeavesOfType(ENCOUNTER_VIEW)
+			let leaf: WorkspaceLeaf
+			
+			if (existingLeaves.length > 0) {
+				leaf = existingLeaves[0]
+			} else {
+				leaf = this.app.workspace.getLeaf("window")
+				await leaf.setViewState({ type: ENCOUNTER_VIEW })
+			}
+			
+			await this.app.workspace.setActiveLeaf(leaf, { focus: true });
+			this.app.workspace.revealLeaf(leaf)
 		});
 
-		this.registerMarkdownCodeBlockProcessor('dnd-action', async (source, el, ctx) => {
-			const { action, error } = validateDndAction(parse(source))
+		this.registerEvent(this.app.vault.on('modify', async (file) => {
 			await this.handleLoadAllData()
+		}))
+
+		this.registerMarkdownCodeBlockProcessor(DND_ACTION_LANG, async (source, el, ctx) => {
+			const { action, error } = validateDndAction(parse(source))
 
 			if (error !== null) {
 				new ErrorBox({
@@ -52,7 +82,7 @@ export default class DndToolboxPlugin extends Plugin {
 						error
 					}
 				})
-			} else {
+			} else if (action !== null) {
 				new Action({
 					target: el,
 					props: {
@@ -62,9 +92,12 @@ export default class DndToolboxPlugin extends Plugin {
 			}
 		})
 
-		this.registerMarkdownCodeBlockProcessor('dnd-character', async (source, el, ctx) => {
+		for (const command of Object.values(commands)) {
+			this.addCommand(command)
+		}
+
+		this.registerMarkdownCodeBlockProcessor(DND_CHARACTER_LANG, async (source, el, ctx) => {
 			const { character, error } = validateDndCharacter(parse(source))
-			await this.handleLoadAllData()
 
 			if (error !== null) {
 				new ErrorBox({
@@ -73,13 +106,13 @@ export default class DndToolboxPlugin extends Plugin {
 						error
 					}
 				})
-			} else {
+			} else if (character !== null){
 				new Character({
 					target: el,
 					props: {
 						character: {
 							...character,
-							template: character?.template !== undefined ? this.characterTemplates.get(character?.template) : undefined
+							template: character?.template !== undefined ? this.state.characterTemplates.get(character?.template) : undefined
 						}
 					}
 				})

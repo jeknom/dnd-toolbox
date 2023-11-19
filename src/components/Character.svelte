@@ -4,13 +4,14 @@
 	import DndAction from "./DndAction.svelte";
 
 	export let character: DndCharacter
-    const { id, template } = character
-    console.log(template)
+
+    $: ({ id, size, race, template, alignment  } = character)
 </script>
 
 <div class="character grid">
     <div class="header">
-        <h2 class="highlight">{id}</h2>
+        <h2 class="highlight override-margin">{id}</h2>
+        <p class="override-margin">{#if size !== undefined}{size}{/if}{#if race !== undefined}{' '}{race}{/if}{#if alignment !== undefined}, {alignment}{/if}</p>
         <img class="mon-stat-block__separator-img" alt="" src="https://www.dndbeyond.com/file-attachments/0/579/stat-block-header-bar.svg">
     </div>
     {#if template !== undefined}
@@ -56,6 +57,10 @@
 
     .header {
         grid-area: header;
+    }
+
+    .override-margin {
+        margin: 0px 4px 0px 0px;
     }
 
     .highlight {

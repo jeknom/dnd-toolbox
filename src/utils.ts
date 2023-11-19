@@ -2,6 +2,7 @@ import { TFile } from "obsidian";
 import { parse } from 'yaml'
 import { DndActionRaw, DndActionRawSchema, DndCharacter, DndCharacterRaw, DndCharacterRawSchema, DndCharacterTemplate, DndCharacterTemplateRaw, DndCharacterTemplateRawSchema, DndDiceData, DndDiceRegexGroupsSchema, DndToHitRegexGroupsSchema, ParseErrorTypeIndicator } from "./types";
 import { ZodError } from "zod";
+import { EMOJI_DUMP } from "./constants";
 
 export const REGEX_DND_ACTION = /```dnd-action\s*(?<yaml>[\s\S]+?)\s*```/g
 export const REGEX_DND_CHARACTER_TEMPLATE = /```dnd-template-character\s*(?<yaml>[\s\S]+?)\s*```/gm
@@ -202,6 +203,19 @@ export function validateDndCharacter(data: unknown) {
     return { character, error }
 }
 
+export function generateRandomEmoji(inputString: string): string {
+    const emojis = EMOJI_DUMP;
+    
+    // Use a hash function to generate a pseudo-random index based on the input string
+    const hash = inputString
+        .split('')
+        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const randomIndex = hash % emojis.length;
+
+    return emojis[randomIndex];
+}
+
 /**
  * Loads all character blocks from a file and adds them to the provided character array.
  */
@@ -280,3 +294,4 @@ function updateErrors<TError>(file: TFile, zodError: ZodError<TError>, errors: Z
 
     errors.push(zodError)
 }
+
