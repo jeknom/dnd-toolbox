@@ -140,6 +140,13 @@
 	const players = allCharacters
 		.filter((c) => c.isPlayer)
 		.sort((a, b) => sortAlphabetical(a.id, b.id));
+	const templateCharacters = Array.from(state.characterTemplates.values()).map(t => ({
+		id: t.id,
+		template: t,
+		alignment: 'Unknown',
+		size: 'Unknown',
+		race: 'Unknown'
+	} as DndCharacter)).sort((a, b) => sortAlphabetical(a.id, b.id))
 
 	function addPlayers() {
 		for (const player of players) {
@@ -217,6 +224,17 @@
 					<li class="picker-item">
 						<p>{character.id}</p>
 						<button on:click={() => addCombatant(character)}
+							>Add</button
+						>
+					</li>
+				{/each}
+			</ul>
+			<h3>Templates</h3>
+			<ul>
+				{#each templateCharacters as template (template.id)}
+					<li class="picker-item">
+						<p>{template.id}</p>
+						<button on:click={() => addCombatant(template)}
 							>Add</button
 						>
 					</li>
