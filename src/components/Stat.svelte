@@ -12,21 +12,7 @@
     }
 </script>
 
-<div class="stat">
-    <span class="highlight">{statPrefix}</span>
+<div class="flex flex-col items-center justify-center">
+    <span class="text-red-800 font-bold">{statPrefix}</span>
     <span>{valuePrefix}{value}</span>
 </div>
-
-<style>
-    .stat {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-items: center;
-    }
-
-    .highlight {
-        color: darkred;
-        font-weight: bold;
-    }
-</style>

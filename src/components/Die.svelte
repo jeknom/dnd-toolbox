@@ -26,15 +26,9 @@
     }
 </script>
 
-<button class="die-button" on:click={roll}>
+<button class="text-white text-xs px-1 py-2" on:click={roll}>
     {diceString}
     {#if lastRoll !== null}
         = {lastRoll}
     {/if}
 </button>
-
-<style>
-    .die-button {
-        cursor: pointer;
-    }
-</style>

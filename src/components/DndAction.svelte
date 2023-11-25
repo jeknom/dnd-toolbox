@@ -7,33 +7,13 @@
 	const detectedDice = parseDiceDataFromString(action.description)
 </script>
 
-<div class="action">
-	<p><span class="actionName">{action.id}.</span> {action.description}</p>
+<div class="flex flex-col gap-1">
+	<div><span class='font-bold'>{action.id}.</span> {action.description}</div>
 	{#if detectedDice.length > 0}
-		<div class="detected-dice">
+		<div class="flex flex-row gap-1">
 			{#each detectedDice as dice}
 				<Die dice={dice} />
 			{/each}
 		</div>
 	{/if}
 </div>
-
-<style>
-	p {
-		margin: 0px;
-	}
-
-	.action {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-	.actionName {
-		font-weight: bold;
-	}
-	.detected-dice {
-		display: flex;
-		flex-direction: row;
-		gap: 4px;
-	}
-</style>

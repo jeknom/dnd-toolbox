@@ -4,7 +4,7 @@
 	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
-		"dev": "node esbuild.config.mjs",
+		"dev": "concurrently \"npx tailwindcss -i ./main.css -o ./styles.css --watch\" \"node esbuild.config.mjs\"",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
@@ -23,11 +23,13 @@
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
+		"concurrently": "8.2.2",
 		"esbuild": "0.17.3",
 		"esbuild-svelte": "^0.8.0",
 		"obsidian": "latest",
 		"svelte": "4.2.5",
 		"svelte-preprocess": "5.1.0",
+		"tailwindcss": "^3.3.5",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
 	}

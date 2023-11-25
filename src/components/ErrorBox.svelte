@@ -15,19 +15,8 @@
     }
 </script>
 
-<div class="error">
+<div class="border rounded-md bg-red-800 text-white px-2">
     {#each error.errors as issue}
 	    <p>{getErrorMessage(issue)}</p>
     {/each}
 </div>
-
-<style>
-	.error {
-        border: 1px rgb(92, 92, 92) solid;
-        border-radius: 4px;
-        background-color: rgb(144, 30, 30);
-        color: white;
-        padding-right: 4px;
-        padding-left: 4px;
-    }
-</style>
