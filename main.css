@@ -46,3 +46,14 @@ button {
     padding-right: 4px;
     padding-left: 4px;
 }
+
+input {
+    padding: 8px 4px;
+    font-size: large;
+    background: transparent;
+    border-bottom: 1px solid white;
+}
+
+input:hover {
+    border-bottom: 2px solid white;
+}

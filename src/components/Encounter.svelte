@@ -14,11 +14,11 @@
 	import Character from "./Character.svelte";
 	import CombatantItem from "./CombatantItem.svelte";
 	import ListItemWithButton from "./ListItemWithButton.svelte";
+	import Die from "./Die.svelte";
 
 	export let state: DndToolboxState;
 
 	const ulClasses = "flex flex-col p-0 gap-2";
-	const liClasses = "list-none";
 	let encounter: DndEncounter = {
 		combatants: [],
 		hasStarted: false,
@@ -191,10 +191,10 @@
 			{/if}
 		</div>
 	</div>
-	<div class="actions">
-		<button on:click={previousCombatant}> Prev </button>
-		<button on:click={nextCombatant}> Next </button>
-		<button on:click={stopEncounter}> Stop </button>
+	<div class="absolute right-3 bottom-3">
+		<button class="px-4" on:click={previousCombatant}> Prev </button>
+		<button class="px-4" on:click={nextCombatant}> Next </button>
+		<button class="px-4" on:click={stopEncounter}> Stop </button>
 	</div>
 {:else}
 	<div class="grid grid-cols-2 gap-8 h-[80vh]">
@@ -252,8 +252,9 @@
 			</ul>
 		</div>
 	</div>
-	<div class="actions">
+	<div class="absolute right-3 bottom-3">
 		<button
+			class='px-4'
 			disabled={encounter.combatants.length === 0}
 			on:click={startEncounter}
 		>
@@ -261,6 +262,15 @@
 		</button>
 	</div>
 {/if}
+
+<div class="absolute left-3 bottom-3">
+	<Die dice={{ die: 4, multiplier: 1 }} />
+	<Die dice={{ die: 6, multiplier: 1 }} />
+	<Die dice={{ die: 8, multiplier: 1 }} />
+	<Die dice={{ die: 10, multiplier: 1 }} />
+	<Die dice={{ die: 12, multiplier: 1 }} />
+	<Die dice={{ die: 20, multiplier: 1 }} />
+</div>
 
 <style>
 	.actions {

@@ -54,6 +54,7 @@ export default class DndToolboxPlugin extends Plugin {
 		this.registerView(ENCOUNTER_VIEW, (leaf) => new EncounterView(leaf, this))
 
 		this.addRibbonIcon('swords', 'Start encounter', async (evt: MouseEvent) => {
+			await this.handleLoadAllData()
 			const existingLeaves = this.app.workspace.getLeavesOfType(ENCOUNTER_VIEW)
 			let leaf: WorkspaceLeaf
 			
