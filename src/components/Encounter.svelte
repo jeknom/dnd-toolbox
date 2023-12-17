@@ -58,9 +58,9 @@
 		const combatant = {
 			id: combatantId,
 			initiative: randomRange(1, 20),
+			hp: character.template?.stats.hp.toString(),
 			character: newCharacter,
 		};
-		console.log(combatant);
 		encounter.combatants = [...encounter.combatants, combatant];
 
 		sortCombatants("name");
@@ -105,7 +105,7 @@
 		}
 
 		const idx = encounter.combatants.findIndex((c) => c.id === id);
-		if (idx != -1) {
+		if (idx !== -1) {
 			encounter.combatants[idx].initiative = newNum;
 		}
 
@@ -124,6 +124,10 @@
 		}
 
 		currentTurnCombatant = encounter.combatants[nextIdx];
+		if (currentTurnCombatant.hp === '0') {
+			nextCombatant()
+		}
+
 		handleSetFocusedCombatant(currentTurnCombatant.id);
 	}
 
@@ -138,6 +142,10 @@
 		}
 
 		currentTurnCombatant = encounter.combatants[nextIdx];
+		if (currentTurnCombatant.hp === '0') {
+			previousCombatant()
+		}
+
 		handleSetFocusedCombatant(currentTurnCombatant.id);
 	}
 
