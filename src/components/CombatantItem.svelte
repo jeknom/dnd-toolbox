@@ -13,6 +13,8 @@
 	$: isZeroHp = combatant.hp && parseInt(combatant.hp) <= 0
 
 	let debounceTimer: number;
+	$: ({ id: combatantId, initiative, hp } = combatant)
+	$: ({ id: characterId, isPlayer, template } = combatant.character)
 
 	const debounceInitiativeChange = (
 		id: string,
@@ -29,17 +31,21 @@
 </script>
 
 <li class={`rounded-md shadow-md ${focused ? 'shadow-yellow-200' : turn ? 'shadow-yellow-600' : ''}`}>
-    <button class='flex flex-col items-start p-4 gap-4 rounded-md min-h-[40px] w-full h-full shadow-md' on:click={() => click(combatant.id)}>
+    <button class='flex flex-col items-start p-4 gap-4 rounded-md min-h-[40px] w-full h-full shadow-md' on:click={() => click(combatantId)}>
 		{#if isZeroHp}
 			<div class="flex w-full justify-between items-center">
-				<span>💀 {combatant.character.id}</span>
-				<button on:click={() => combatant.hp = '1'}>Revive</button>
+				<span>💀 {characterId}</span>
+				<button on:click={() => hp = '1'}>Revive</button>
 			</div>
 		{:else}
-			<div class={`${combatant.character.isPlayer ? 'text-green-500' : 'text-yellow-500'}`}>
+			<div class={`${isPlayer ? 'text-green-500' : 'text-yellow-500'}`}>
 				<label>
-					🧑
-					<input class='text-xl' value={combatant.character.id} />
+					{#if isPlayer}
+						🧑
+					{:else}
+						🐉
+					{/if}
+					<input class='text-xl' value={characterId} />
 				</label>
 			</div>
 			<div class="grid grid-cols-2 gap-2">
@@ -48,11 +54,11 @@
 					<input
 						class='w-20'
 						id="initiative"
-						value={combatant.initiative}
-						on:input={(e) => debounceInitiativeChange(combatant.id, e)}
+						value={initiative}
+						on:input={(e) => debounceInitiativeChange(combatantId, e)}
 					/>
 				</label>
-				{#if combatant.character.template !== undefined}	
+				{#if template !== undefined}	
 					<label>
 						🧡
 						<input class='w-20' bind:value={combatant.hp} />

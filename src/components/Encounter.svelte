@@ -26,6 +26,7 @@
 
 	let currentTurnCombatant: DndCombatant | null = null;
 	let focusedCombatant: DndCombatant | null = null;
+	let turns = 0;
 
 	function sortCombatants(by: "name" | "initiative") {
 		if (by === "name") {
@@ -37,8 +38,8 @@
 				(a.initiative ?? 0) < (b.initiative ?? 0)
 					? 1
 					: (a.initiative ?? 0) > (b.initiative ?? 0)
-					  ? -1
-					  : 0,
+						? -1
+						: 0,
 			);
 		}
 	}
@@ -123,9 +124,11 @@
 			nextIdx = 0;
 		}
 
+		turns++;
+
 		currentTurnCombatant = encounter.combatants[nextIdx];
-		if (currentTurnCombatant.hp === '0') {
-			nextCombatant()
+		if (currentTurnCombatant.hp === "0") {
+			nextCombatant();
 		}
 
 		handleSetFocusedCombatant(currentTurnCombatant.id);
@@ -141,9 +144,11 @@
 			nextIdx = encounter.combatants.length - 1;
 		}
 
+		turns--;
+
 		currentTurnCombatant = encounter.combatants[nextIdx];
-		if (currentTurnCombatant.hp === '0') {
-			previousCombatant()
+		if (currentTurnCombatant.hp === "0") {
+			previousCombatant();
 		}
 
 		handleSetFocusedCombatant(currentTurnCombatant.id);
@@ -177,7 +182,21 @@
 </script>
 
 {#if encounter.hasStarted}
-	<div class="grid grid-cols-6 h-[80vh]">
+<div class="grid grid-cols-3 border-b border-white my-4">
+	{#if currentTurnCombatant}
+		<h5>{currentTurnCombatant?.character.id}'s turn</h5>
+		<h4 class="justify-self-center">Round {Math.ceil((turns === 0 ? 1 : turns) / encounter.combatants.length)}</h4>
+		{#if turns >= 10}
+			<h5 class="justify-self-end">~{Math.floor(turns * 6 / 60)} minutes ⌛</h5>
+		{:else}
+			<h5 class="justify-self-end">{'<'} minute ⌛</h5>
+		{/if}
+	{:else}
+		<h4>Start by pressing next!</h4>
+	{/if}
+</div>
+
+	<div class="grid grid-cols-6 h-[75vh]">
 		<div class="flex flex-col gap-2 col-span-2 overflow-y-auto px-2">
 			<ul class={ulClasses}>
 				{#each encounter.combatants as combatant (combatant.id)}
@@ -199,8 +218,8 @@
 			{/if}
 		</div>
 	</div>
-	<div class="absolute right-3 bottom-3">
-		<button class="px-4" on:click={previousCombatant}> Prev </button>
+	<div class="absolute w-full flex justify-center gap-2 bottom-3">
+		<button class="px-4" disabled={turns <= 1} on:click={previousCombatant}> Prev </button>
 		<button class="px-4" on:click={nextCombatant}> Next </button>
 		<button class="px-4" on:click={stopEncounter}> Stop </button>
 	</div>
@@ -212,7 +231,7 @@
 				{#each characters as character (character.id)}
 					<ListItemWithButton
 						type="NPC"
-						typeClasses='text-yellow-500'
+						typeClasses="text-yellow-500"
 						value={character.id}
 						buttonText="Add"
 						onButtonClick={() => addCombatant(character)}
@@ -225,7 +244,7 @@
 				{#each players as character (character.id)}
 					<ListItemWithButton
 						type="Player"
-						typeClasses='text-green-500'
+						typeClasses="text-green-500"
 						value={character.id}
 						buttonText="Add"
 						onButtonClick={() => addCombatant(character)}
@@ -238,7 +257,7 @@
 					<ListItemWithButton
 						type="NPC"
 						value={template.id}
-						typeClasses='text-yellow-500'
+						typeClasses="text-yellow-500"
 						buttonText="Add"
 						onButtonClick={() => addCombatant(template)}
 					/>
@@ -250,19 +269,21 @@
 			<ul class={ulClasses}>
 				{#each encounter.combatants as combatant (combatant.id)}
 					<ListItemWithButton
-						type={combatant.character.isPlayer ? 'Player' : 'NPC'}
-						typeClasses={combatant.character.isPlayer ? 'text-green-500' : 'text-yellow-500'}
+						type={combatant.character.isPlayer ? "Player" : "NPC"}
+						typeClasses={combatant.character.isPlayer
+							? "text-green-500"
+							: "text-yellow-500"}
 						value={combatant.character.id}
-						buttonText='Remove'
+						buttonText="Remove"
 						onButtonClick={() => removeCombatant(combatant.id)}
 					/>
 				{/each}
 			</ul>
 		</div>
 	</div>
-	<div class="absolute right-3 bottom-3">
+	<div class="absolute w-full flex justify-center gap-2 bottom-3">
 		<button
-			class='px-4'
+			class="px-4"
 			disabled={encounter.combatants.length === 0}
 			on:click={startEncounter}
 		>
@@ -271,7 +292,7 @@
 	</div>
 {/if}
 
-<div class="absolute left-3 bottom-3">
+<div class="flex flex-col gap-2 absolute right-3 bottom-3">
 	<Die dice={{ die: 4, multiplier: 1 }} />
 	<Die dice={{ die: 6, multiplier: 1 }} />
 	<Die dice={{ die: 8, multiplier: 1 }} />

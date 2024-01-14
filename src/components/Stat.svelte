@@ -6,10 +6,6 @@
 
     let statPrefix = stat.toUpperCase()
     let valuePrefix = ''
-
-    if (stat !== 'hp' && stat !== 'ac') {
-        valuePrefix = value >= 0 ? '+' : ''
-    }
 </script>
 
 <div class="flex flex-col items-center justify-center">
