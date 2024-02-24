@@ -15,12 +15,12 @@ export const DndStatsRawSchema = z.object({
 })
 
 export const DndAbilityModifiersRawSchema = z.object({
-    str: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    dex: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    int: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    wis: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    cha: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    con: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
+    str: z.number(),
+    dex: z.number(),
+    int: z.number(),
+    wis: z.number(),
+    cha: z.number(),
+    con: z.number(),
 })
 
 export const DndCharacterTemplateRawSchema = z.object({
