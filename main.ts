@@ -1,11 +1,11 @@
 import { Notice, Plugin, WorkspaceLeaf } from 'obsidian';
 import type { DndActionRaw, DndCharacter, DndCharacterTemplate, DndToolboxState } from 'src/types';
-import { loadAllData, validateDndAction, validateDndCharacter } from 'src/utils';
+import { loadAllData, validateDndAction, validateDndCharacter, validateDndCharacterTemplate } from 'src/utils';
 import Action from 'src/components/DndAction.svelte'
 import ErrorBox from 'src/components/ErrorBox.svelte'
 import Character from './src/components/Character.svelte'
 import { parse } from 'yaml';
-import { DND_ACTION_LANG, DND_CHARACTER_LANG, ENCOUNTER_VIEW } from 'src/constants';
+import { DND_ACTION_LANG, DND_CHARACTER_LANG, DND_TEMPLATE_CHARACTER_LANG, ENCOUNTER_VIEW } from 'src/constants';
 import * as commands from './src/commands'
 import EncounterView from 'src/views/EncounterView';
 
@@ -96,6 +96,30 @@ export default class DndToolboxPlugin extends Plugin {
 		for (const command of Object.values(commands)) {
 			this.addCommand(command)
 		}
+
+		this.registerMarkdownCodeBlockProcessor(DND_TEMPLATE_CHARACTER_LANG, async (source, el, ctx) => {
+			const { characterTemplate, error } = validateDndCharacterTemplate(parse(source))
+
+			if (error !== null) {
+				new ErrorBox({
+					target: el,
+					props: {
+						error
+					}
+				})
+			} else if (characterTemplate !== null){
+				new Character({
+					target: el,
+					props: {
+						character: {
+							id: characterTemplate.id,
+							isPlayer: false,
+							template: this.state.characterTemplates.get(characterTemplate.id)
+						}
+					}
+				})
+			}
+		})
 
 		this.registerMarkdownCodeBlockProcessor(DND_CHARACTER_LANG, async (source, el, ctx) => {
 			const { character, error } = validateDndCharacter(parse(source))

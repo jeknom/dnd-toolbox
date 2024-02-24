@@ -42,7 +42,12 @@ export const insertCharacterTemplate: Command = {
             actions: [
                 'This needs to match to the ID of an action',
                 'And you can have multiple actions'
-
+            ],
+            uniqueActions: [
+                {
+                    id: 'Name of the unique action',
+                    description: 'This imaginary action has chance of +4 to hit and deals 1d8+5 damage'
+                }
             ]
         } as DndCharacterTemplateRaw),
         editor.getCursor())
@@ -59,7 +64,13 @@ export const insertCharacter: Command = {
             template: 'This needs to match to the ID of a character template',
             alignment: 'Neutral Good',
             size: 'Medium',
-            race: 'Human'
+            race: 'Human',
+            uniqueActions: [
+                {
+                    id: 'Name of the unique action',
+                    description: 'This imaginary action has chance of +4 to hit and deals 1d8+5 damage'
+                }
+            ]
         } as DndCharacterRaw),
         editor.getCursor())
     }

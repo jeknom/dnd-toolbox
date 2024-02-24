@@ -23,3 +23,5 @@ data.json
 
 # Dont want no yarn files
 .yarn
+# Dont do env
+.env

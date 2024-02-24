@@ -3,7 +3,7 @@
 	"name": "DnD Toolbox",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This plugin helps you manage DnD campaigns inside Obsidian.",
+	"description": "This plugin helps you manage DnD campaigns inside Obsidian.md.",
 	"author": "Johannes Palvanen",
 	"authorUrl": "https://github.com/jeknom/dnd-toolbox",
 	"isDesktopOnly": true
