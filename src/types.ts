@@ -27,7 +27,8 @@ export const DndCharacterTemplateRawSchema = z.object({
     id: z.string().min(1, { message: REQUIRED_MESSAGE }),
     stats: DndStatsRawSchema,
     modifiers: DndAbilityModifiersRawSchema,
-    actions: z.array(z.string().min(1, { message: REQUIRED_MESSAGE })).optional()
+    actions: z.array(z.string().min(1, { message: REQUIRED_MESSAGE })).optional(),
+    uniqueActions: z.array(DndActionRawSchema).optional()
 })
 
 export const DndCharacterRawSchema = z.object({
@@ -37,6 +38,7 @@ export const DndCharacterRawSchema = z.object({
     alignment: z.string().optional(),
     size: z.string().optional(),
     race: z.string().optional(),
+    uniqueActions: z.array(DndActionRawSchema).optional()
 })
 
 export const DndDiceRegexGroupsSchema = z.object({

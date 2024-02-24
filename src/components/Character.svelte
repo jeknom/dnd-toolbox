@@ -5,7 +5,7 @@
 
 	export let character: DndCharacter
 
-    $: ({ id, size, race, template, alignment  } = character)
+    $: ({ id, size, race, template, alignment, uniqueActions  } = character)
 </script>
 
 <div class="character relative text-black grid grid-cols-2 gap-2 shadow-md border border-yellow-500 p-4 m-4 text-md">
@@ -32,6 +32,12 @@
             </div>
         </div>
         <div class="flex flex-col gap-4">
+            {#each uniqueActions ?? [] as action}
+                <DndAction action={action} />
+            {/each}
+            {#each template.uniqueActions ?? [] as action}
+                <DndAction action={action} />
+            {/each}
             {#each template.actions as action}
                 <DndAction action={action} />
             {/each}
