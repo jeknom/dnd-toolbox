@@ -10,10 +10,10 @@
 		newValue: HTMLInputElement,
 	) => void;
     
-	$: isZeroHp = combatant.hp && parseInt(combatant.hp) <= 0
+	$: isZeroHp = combatant?.hp !== undefined && parseInt(combatant.hp) <= 0
 
 	let debounceTimer: number;
-	$: ({ id: combatantId, initiative, hp } = combatant)
+	$: ({ id: combatantId, initiative } = combatant)
 	$: ({ id: characterId, isPlayer, template } = combatant.character)
 
 	const debounceInitiativeChange = (
@@ -28,6 +28,8 @@
 			750,
 		) as unknown as number;
 	};
+
+	console.log(isZeroHp)
 </script>
 
 <li class={`rounded-md shadow-md ${focused ? 'shadow-yellow-200' : turn ? 'shadow-yellow-600' : ''}`}>
@@ -35,7 +37,10 @@
 		{#if isZeroHp}
 			<div class="flex w-full justify-between items-center">
 				<span>💀 {characterId}</span>
-				<button on:click={() => hp = '1'}>Revive</button>
+				<button on:click={(e) => {
+					e.stopPropagation()
+					combatant.hp = '1'
+				}}>Revive</button>
 			</div>
 		{:else}
 			<div class={`${isPlayer ? 'text-green-500' : 'text-yellow-500'}`}>
