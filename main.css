@@ -2,58 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-h1 {
-    font-size: 2.6rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
+.ht {
+    color: darkred;
+    font-weight: 600;
+    font-family: 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;
 }
 
-h2 {
-    font-size: 2.3rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
+.hst {
+    color: darkred;
+    font-size: .8rem;
+    font-weight: 700;
 }
 
-h3 {
-    font-size: 2rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
+.hst2 {
+    color: black;
+    font-size: .8rem;
+    font-weight: 700;
 }
 
-h4 {
-    font-size: 1.5rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
+.hb {
+    color: darkred;
+    font-size: .8rem;
 }
 
-h5 {
-    font-size: 1.2rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
-}
-
-h6 {
-    font-size: 1rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
-}
-
-body {
-    font-size: 0.8rem;
-}
-
-button {
-    padding-right: 4px;
-    padding-left: 4px;
-}
-
-input {
-    padding: 8px 4px;
-    font-size: large;
-    background: transparent;
-    border-bottom: 1px solid white;
-}
-
-input:hover {
-    border-bottom: 2px solid white;
+.hb2 {
+    color: black;
+    font-size: .8rem;
 }

@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
-    "types": ["svelte", "node"],
+    "types": [
+      "svelte",
+      "node"
+    ],
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "baseUrl": ".",
     "module": "ESNext",
     "target": "ES6",
@@ -9,7 +15,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-	"strictNullChecks": true,
+    "strictNullChecks": true,
     "lib": [
       "DOM",
       "ES5",

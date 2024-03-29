@@ -1,72 +1,72 @@
 import { z } from 'zod'
+import { LANGUAGES, MONSTER_TYPES, SIZES } from './constants'
 
 const REQUIRED_MESSAGE = 'Property is required'
 const VALUE_ZERO_OR_ABOVE_MESSAGE = 'Value needs to be more or equal to zero'
 
-export const DndActionRawSchema = z.object({
-    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
+const MonsterType = z.enum(MONSTER_TYPES)
+const MonsterSize = z.enum(SIZES)
+const MonsterLanguages = z.enum(LANGUAGES)
+
+export const ActionSchema = z.object({
+    name: z.string().min(1, { message: REQUIRED_MESSAGE }),
     description: z.string().min(1, { message: REQUIRED_MESSAGE })
 })
 
-export const DndStatsRawSchema = z.object({
+export type Action = z.infer<typeof ActionSchema>
+
+const AbilityScoreSchema = z.number().min(0)
+
+export const AbilityScoresSchema = z.object({
+    str: AbilityScoreSchema,
+    dex: AbilityScoreSchema,
+    int: AbilityScoreSchema,
+    wis: AbilityScoreSchema,
+    cha: AbilityScoreSchema,
+    con: AbilityScoreSchema,
+})
+
+export const SensesSchema = z.object({
+    blindsight: z.number().min(0).optional(),
+    darkvision: z.number().min(0).optional(),
+    tremorsense: z.number().min(0).optional(),
+    truesight: z.number().min(0).optional(),
+})
+
+export const SpeedsSchema = z.object({
+    ground: z.number().min(0).optional(),
+    fly: z.number().min(0).optional(),
+    swim: z.number().min(0).optional(),
+    climb: z.number().min(0).optional(),
+})
+
+export const LegendarySchema = z.object({
+    hasResistance: z.boolean().optional(),
+    actions: z.array(ActionSchema).optional()
+})
+
+export const StatBlockSchema = z.object({
+    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
+    name: z.string().min(1, { message: REQUIRED_MESSAGE }), 
     ac: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
     hp: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-    speedFt: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
-})
-
-export const DndAbilityModifiersRawSchema = z.object({
-    str: z.number(),
-    dex: z.number(),
-    int: z.number(),
-    wis: z.number(),
-    cha: z.number(),
-    con: z.number(),
-})
-
-export const DndCharacterTemplateRawSchema = z.object({
-    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
-    stats: DndStatsRawSchema,
-    modifiers: DndAbilityModifiersRawSchema,
-    actions: z.array(z.string().min(1, { message: REQUIRED_MESSAGE })).optional(),
-    uniqueActions: z.array(DndActionRawSchema).optional()
-})
-
-export const DndCharacterRawSchema = z.object({
-    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
-    isPlayer: z.boolean(),
-    template: z.string().optional(),
+    speeds: SpeedsSchema.optional(),
+    abilityScores: AbilityScoresSchema,
     alignment: z.string().optional(),
-    size: z.string().optional(),
-    race: z.string().optional(),
-    uniqueActions: z.array(DndActionRawSchema).optional()
+    type: MonsterType.optional(),
+    size: MonsterSize.optional(),
+    languages: MonsterLanguages.array().optional(),
+    senses: SensesSchema.optional(),
+    actions: ActionSchema.array().optional(),
+    bonusActions: ActionSchema.array().optional(),
+    abilites: ActionSchema.array().optional(),
+    legendary: LegendarySchema.optional(),
 })
 
-export const DndDiceRegexGroupsSchema = z.object({
-    die: z.string().min(1, { message: REQUIRED_MESSAGE }),
-    multiplier: z.string().min(1, { message: REQUIRED_MESSAGE }),
-    operator: z.literal('+').or(z.literal('-')).optional(),
-    modifier: z.string().min(1, { message: REQUIRED_MESSAGE }).optional()
+export type StatBlock = z.infer<typeof StatBlockSchema>
+
+export const CampaignStoreSchema = z.object({
+    npcs: StatBlockSchema.array()
 })
 
-export const DndToHitRegexGroupsSchema = z.object({
-    toHit: z.string().min(1, { message: REQUIRED_MESSAGE })
-})
-
-export type DndActionRaw = z.infer<typeof DndActionRawSchema>
-export type DndStatsRaw = z.infer<typeof DndStatsRawSchema>
-export type DndAbilityModifiersRaw = z.infer<typeof DndAbilityModifiersRawSchema>
-export type DndCharacterTemplateRaw = z.infer<typeof DndCharacterTemplateRawSchema>
-export type DndCharacterRaw = z.infer<typeof DndCharacterRawSchema>
-
-export type DndToolboxState = {
-	actions: Map<string, DndActionRaw>
-	characterTemplates: Map<string, DndCharacterTemplate>
-	characters: Map<string, DndCharacter>
-}
-export type DndCharacterTemplate = Omit<DndCharacterTemplateRaw, 'actions'> & { actions: DndActionRaw[] }
-export type DndCharacter = Omit<DndCharacterRaw, 'template'> & { template?: DndCharacterTemplate }
-export type DndDiceData = { die: number, multiplier: number, modifier?: number }
-export type DndStat = 'str' | 'int' | 'wis' | 'cha' | 'con' | 'dex'
-export type DndCombatant = { id: string, initiative: number, hp?: string, character: DndCharacter }
-export type DndEncounter = { hasStarted: boolean, combatants: DndCombatant[] }
-export type ParseErrorTypeIndicator = 'CharacterTemplate' | 'Character' | 'Action'
+export type CampaignStore = z.infer<typeof CampaignStoreSchema>
