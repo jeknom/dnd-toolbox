@@ -45,8 +45,9 @@ export class EncounterView extends ItemView {
             })
         
         })
-        .catch(() => {
+        .catch((e) => {
             new Notice("Error loading campaign store")
+            console.error(e)
             this.onClose()
         })
     }

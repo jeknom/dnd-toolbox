@@ -39,12 +39,12 @@
 </script>
 
 <div class="relative grid grid-cols-10 gap-4 pb-24 h-full w-full">
-	{#if sidebarOpen}
+	{#if sidebarOpen || combatants.length === 0}
 		<div
-			class="absolute z-10 flex flex-col gap-2 left-2 bg-zinc-900 h-full p-4 overflow-y-auto"
+			class="absolute z-10 flex flex-col gap-2 right-2 bg-zinc-900 h-full p-4 overflow-y-auto"
 		>
 			<button
-				class="absolute bottom-2 left-2"
+				class="absolute bottom-2 right-2"
 				on:click={() => (sidebarOpen = false)}><X /></button
 			>
 			<span class="ht text-xl">Players</span>
@@ -77,12 +77,12 @@
 		</div>
 	{:else}
 		<button
-			class="absolute bottom-2 left-2 z-10"
+			class="absolute bottom-2 right-2 z-10"
 			on:click={() => (sidebarOpen = true)}><Menu /></button
 		>
 	{/if}
 	<div class="flex flex-col gap-2 left-2 col-span-2 overflow-y-auto">
-		{#if currentCombatant !== null}
+		{#if currentCombatant}
 			<div class="flex gap-2">
 				<Clock />
 				{#if encounter.turns <= combatants.length}
@@ -113,7 +113,7 @@
 			</div>
 		{/if}
 		<div class="flex flex-col gap-1">
-			{#each combatants as { id, player, initiative, hp, statBlock, conditions }, i (id)}
+			{#each combatants as { id, player, initiative, hp, statBlock, conditions, notes }, i (id)}
 				<div
 					class="relative flex flex-col gap-2 p-2 cursor-pointer {hp ===
 					0
@@ -130,14 +130,17 @@
 					on:click={() => handler.changeFocus(encounter, id)}
 				>
 					<span
-						class="text-lg {player !== undefined
+						class="text-sm {player !== undefined
 							? 'text-green-600'
 							: 'text-yellow-400'}"
-						>{player?.name ?? statBlock?.name}</span
-					>
+						>{player?.name ?? statBlock?.name}</span>
+                    {#if notes}
+                        <span class="text-xs text-gray-400">{notes}</span>
+                    {/if}
 					<div class="flex gap-1 text-xs items-center">
 						<Dices />
 						<input
+                            type="text"
 							value={initiative}
 							on:input={(e) =>
 								handler.updateInitiative(
@@ -151,6 +154,7 @@
 						<div class="flex gap-1 text-xs items-center">
 							<HeartPulse />
 							<input
+                                type="text"
 								value={hp.toString()}
 								on:input={(e) =>
 									handler.updateHp(
@@ -176,7 +180,7 @@
 			{/each}
 		</div>
 	</div>
-	{#if focusedCombatant !== null}
+	{#if focusedCombatant}
 		<div class="flex flex-col gap-2 left-2 col-span-8 overflow-y-auto">
 			<div
 				class="grid gap-2 col-start-auto grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 text-xs"
@@ -187,7 +191,7 @@
 						<input
 							type="checkbox"
 							checked={(
-								focusedCombatant.conditions ?? []
+								focusedCombatant?.conditions ?? []
 							).includes(condition)}
 							on:change={() =>
 								handler.toggleCondition(
@@ -199,8 +203,9 @@
 					</label>
 				{/each}
 			</div>
-			<textarea
-				class="p-2 min-h-[120px]"
+			<input
+                type="text"
+				class="p-2"
 				value={focusedCombatant?.notes ?? ""}
 				on:input={(e) =>
 					handler.updateNotes(
@@ -208,7 +213,7 @@
 						focusedCombatant?.id ?? "",
 						e.currentTarget.value,
 					)}
-				placeholder="This person is located at the far end of the room..."
+				placeholder="Write notes here..."
 			/>
 			{#if focusedCombatant.statBlock !== undefined}
 				<StatBlockView block={focusedCombatant.statBlock} />
