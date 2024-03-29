@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { LANGUAGES, MONSTER_TYPES, SIZES } from './constants'
+import { CONDITIONS, LANGUAGES, MONSTER_TYPES, SIZES } from './constants'
 
 const REQUIRED_MESSAGE = 'Property is required'
 const VALUE_ZERO_OR_ABOVE_MESSAGE = 'Value needs to be more or equal to zero'
@@ -7,6 +7,9 @@ const VALUE_ZERO_OR_ABOVE_MESSAGE = 'Value needs to be more or equal to zero'
 const MonsterType = z.enum(MONSTER_TYPES)
 const MonsterSize = z.enum(SIZES)
 const MonsterLanguages = z.enum(LANGUAGES)
+const Conditions = z.enum(CONDITIONS)
+
+export type Condition = z.infer<typeof Conditions>
 
 export const ActionSchema = z.object({
     name: z.string().min(1, { message: REQUIRED_MESSAGE }),
@@ -65,8 +68,36 @@ export const StatBlockSchema = z.object({
 
 export type StatBlock = z.infer<typeof StatBlockSchema>
 
+export const PlayerSchema = z.object({
+    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
+    name: z.string().min(1, { message: REQUIRED_MESSAGE }),
+})
+
+export type Player = z.infer<typeof PlayerSchema>
+
+export const CombatantSchema = z.object({
+    id: z.string().min(1, { message: REQUIRED_MESSAGE }),
+    initiative: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
+    hp: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }).optional(),
+    conditions: Conditions.array().optional(),
+    notes: z.string().optional(),
+    statBlock: StatBlockSchema.optional(),
+    player: PlayerSchema.optional(),
+})
+
+export const EncounterSchema = z.object({
+    combatants: CombatantSchema.array(),
+    currentCombatantIndex: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }).nullable(),
+    focusedCombatantIndex: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }).nullable(),
+    turns: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }),
+})
+
+export type Encounter = z.infer<typeof EncounterSchema>
+
 export const CampaignStoreSchema = z.object({
-    npcs: StatBlockSchema.array()
+    npcs: StatBlockSchema.array(),
+    players: PlayerSchema.array(),
+    lastEncounter: EncounterSchema,
 })
 
 export type CampaignStore = z.infer<typeof CampaignStoreSchema>

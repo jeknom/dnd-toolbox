@@ -1,6 +1,6 @@
 {
-	"id": "dnd-toolbox",
-	"name": "DnD Toolbox",
+	"id": "rp-toolbox",
+	"name": "RP Toolbox",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "This plugin helps you manage DnD campaigns inside Obsidian.md.",

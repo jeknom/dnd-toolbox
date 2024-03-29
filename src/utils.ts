@@ -1,6 +1,6 @@
-import { Vault } from "obsidian";
-import { DEFAULT_STORE, STORE_FILENAME } from "./constants";
-import { CampaignStoreSchema } from "./types";
+import { Notice, Vault } from "obsidian";
+import { APP_NAME, DEFAULT_STORE, STORE_FILENAME } from "./constants";
+import { CampaignStore, CampaignStoreSchema } from "./types";
 
 /**
  * Get a random number between the min and max values
@@ -22,19 +22,33 @@ export function sortAlphabetical(a: string, b: string) {
     return 0;
 }
 
-export async function getSavedCampaignStore(vault: Vault) {
-    const files = vault.getFiles()
-    let storedBlocks = files.find((f) => f.name.includes(STORE_FILENAME))
-
-    if (storedBlocks === undefined) {
-        storedBlocks = await vault.create(`/${STORE_FILENAME}`, JSON.stringify(DEFAULT_STORE, null, 4))
+export async function loadCampaignStoreFromDisk(vault: Vault) {
+    const storeExists = await vault.adapter.exists(STORE_FILENAME)
+    
+    if (!storeExists) {
+        new Notice("No store found, creating a new one")
+        
+        await vault.create(STORE_FILENAME, JSON.stringify(DEFAULT_STORE, null, 4))
+        
+        new Notice("New store created with default values")
     }
     
-    const content = await vault.read(storedBlocks)
+    const content = await vault.adapter.read(STORE_FILENAME)
     const validation = CampaignStoreSchema.safeParse(JSON.parse(content))
     
     if (validation.success) {
+        new Notice(`${APP_NAME} store loaded successfully!`)
+
         return validation.data
+    } else {
+        throw validation.error
+    }
+}
+
+export async function writeCampaignStoreToDisk(vault: Vault, newStore: CampaignStore) {
+    const validation = CampaignStoreSchema.safeParse(newStore)
+    if (validation.success) {
+        await vault.adapter.write(STORE_FILENAME, JSON.stringify(validation.data, null, 4))
     } else {
         throw validation.error
     }

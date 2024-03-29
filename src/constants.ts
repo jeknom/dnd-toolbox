@@ -3,6 +3,8 @@ import { v4 } from 'uuid'
 
 export const STORE_FILENAME = 'campaignstore.json'
 export const BLOCK_PREVIEW_LANG = 'rp-block'
+export const APP_NAME = 'RP Toolbox'
+export const ENCOUNTER_VIEW = 'encounter-view'
 
 export const SIZES = [
     'Tiny',
@@ -32,9 +34,8 @@ export const MONSTER_TYPES = [
 ] as const
 
 export const LANGUAGES = [
-    "Other",
-    "All",
     "Abyssal",
+    "All",
     "Aquan",
     "Auran",
     "Celestial",
@@ -54,6 +55,25 @@ export const LANGUAGES = [
     "Sylvan",
     "Terran",
     "Undercommon",
+    "Other",
+] as const
+
+export const CONDITIONS = [
+    "Blinded",
+    "Charmed",
+    "Deafened",
+    "Exhaustion",
+    "Frightened",
+    "Grappled",
+    "Incapacitated",
+    "Invisible",
+    "Paralyzed",
+    "Petrified",
+    "Poisoned",
+    "Prone",
+    "Restrained",
+    "Stunned",
+    "Unconscious"
 ] as const
 
 export const EMOJI_DUMP = [
@@ -292,5 +312,12 @@ export const DEFAULT_STORE: CampaignStore = {
         EXAMPLE_EASY_NPC,
         EXAMPLE_MEDIUM_NPC,
         EXAMPLE_LEGENDARY_NPC,
-    ]
+    ],
+    players: [],
+    lastEncounter: {
+        combatants: [],
+        turns: 0,
+        currentCombatantIndex: null,
+        focusedCombatantIndex: null,
+    }
 }
