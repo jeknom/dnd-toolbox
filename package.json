@@ -17,6 +17,7 @@
 	],
 	"author": "Johannes Palvanen",
 	"dependencies": {
+		"lucide-svelte": "^0.363.0",
 		"uuid": "9.0.1",
 		"zod": "3.22.4"
 	},

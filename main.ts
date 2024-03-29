@@ -1,5 +1,5 @@
 import { Plugin } from 'obsidian';
-import StatBlock from './src/components/StatBlock/index.svelte'
+import StatBlock from './src/components/StatBlock/StatBlock.svelte'
 import { BLOCK_PREVIEW_LANG } from 'src/constants';
 import { CampaignStore } from 'src/types';
 import { getSavedCampaignStore } from 'src/utils';

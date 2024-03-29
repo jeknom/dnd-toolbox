@@ -4,12 +4,13 @@
 	import Separator from "../Separator.svelte";
 	import Title from "./Title.svelte";
 	import ActionList from "./ActionList.svelte";
+	import Dice from "../Dice/Dice.svelte";
 
 	export let block: StatBlock;
 	const { ac, hp } = block;
 </script>
 
-<div class="flex gap-2 flex-col bg-orange-100 p-2 rounded-md">
+<div class="relative flex gap-2 flex-col bg-orange-100 p-2 rounded-md pb-24">
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 		<div class="flex flex-col gap-4">
 			<Title {block} />
@@ -54,4 +55,5 @@
 			<ActionList title="Legendary Actions" actions={block.legendary?.actions} />
 		</div>
 	</div>
+	<Dice class="absolute bottom-2 right-2" />
 </div>
