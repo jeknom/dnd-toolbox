@@ -6,7 +6,11 @@ This is a plugin for Obsidian which helps the user run a role play campaigns. Cu
 
 # Installation
 
-Right now, you will need some understanding of Obsidian plugins. Clone the repo, build the plugin and drag and drop the `main.js`, `main.css` and `manifest.json` to your plugins folder.
+1. Download the latest `toolbox.zip` from release assets from this GitHub page
+2. Create a `rp-toolbox` folder in `{pathToYourObsidianVault}/.obsidian/plugins`
+3. Extract the files from `toolbox.zip` into that folder
+4. Make sure you have enabled community plugin
+5. That is it, you should be able to use the plugin now
 
 # Features
 
