@@ -1,39 +1,48 @@
 import { Condition, Encounter, Player, StatBlock } from "@/types";
-import { randomRange } from "@/utils";
+import { getCurrentCombatant, getFocusedCombatant, randomRange } from "@/utils";
 import { v4 } from 'uuid'
 import encounterStore from "./encounterStore";
 import { DEFAULT_STORE } from "@/constants";
 
-export default class EncounterStateHandler {
-    timeoutId?: number
-    onUpdateEncounter: (encounter: Encounter) => Promise<void>
+export type WriteEncounterToDiscFn = (encounter: Encounter) => Promise<void>
 
-    constructor(encounter: Encounter, onUpdateEncounter: (encounter: Encounter) => Promise<void>) {
-        encounterStore.set(encounter)
-        this.onUpdateEncounter = onUpdateEncounter;
+export default class EncounterStateHandler {
+    curr: Encounter
+    onWriteEncounterToDisc: WriteEncounterToDiscFn
+    updateDebounceTimeoutId?: number
+
+    constructor(onWriteEncounterToDisc: WriteEncounterToDiscFn) {
+        encounterStore.subscribe((e) => this.curr = e.encounter)
+        this.onWriteEncounterToDisc = onWriteEncounterToDisc;
     }
 
     async updateEncounter(encounter: Encounter) {
         encounter.combatants.sort((a, b) => b.initiative - a.initiative)
-        encounterStore.set(encounter)
-        await this.onUpdateEncounter(encounter)
+        encounterStore.update((e) => e = {
+            ...e,
+            encounter,
+            currentCombatant: getCurrentCombatant(encounter),
+            focusedCombatant: getFocusedCombatant(encounter)
+        })
+        
+        await this.onWriteEncounterToDisc(encounter)
     }
 
-    updateEncounterDeferred(curr: Encounter, encounter: Encounter) {
-        const prevEncounter = structuredClone(curr)
-        clearTimeout(this.timeoutId);
+    updateEncounterDeferred(encounter: Encounter) {
+        const prevEncounter = structuredClone(this.curr)
+        clearTimeout(this.updateDebounceTimeoutId);
 
-        this.timeoutId = setTimeout(async () => {
+        this.updateDebounceTimeoutId = setTimeout(async () => {
             try {
                 this.updateEncounter(encounter)
             } catch (e) {
-                encounterStore.set(prevEncounter)
+                this.updateEncounter(prevEncounter)
             }
         }, 1000) as unknown as number
     }
 
-    public addPlayer(curr: Encounter, player: Player) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public addPlayer(player: Player) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         
         encounterClone.combatants.push({
             id: v4(),
@@ -44,8 +53,8 @@ export default class EncounterStateHandler {
         this.updateEncounter(encounterClone)
     }
 
-    public addMonster(curr: Encounter, monster: StatBlock) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public addMonster(monster: StatBlock) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         
         encounterClone.combatants.push({
             id: v4(),
@@ -57,16 +66,16 @@ export default class EncounterStateHandler {
         this.updateEncounter(encounterClone)
     }
 
-    public removeCombatant(curr: Encounter, combatantId: string) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public removeCombatant(combatantId: string) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         
         encounterClone.combatants = encounterClone.combatants.filter(combatant => combatant.id !== combatantId)
 
         this.updateEncounter(encounterClone)
     }
 
-    public nextCombatant(curr: Encounter) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public nextCombatant() {
+        const encounterClone = structuredClone(this.curr) as Encounter
         const isLastCombatant = encounterClone.currentCombatantIndex === encounterClone.combatants.length - 1
         const isFirstTurn = encounterClone.turns === 0
         const newIndex = isFirstTurn ? 0 : isLastCombatant ? 0 : (encounterClone.currentCombatantIndex ?? 0) + 1
@@ -76,17 +85,17 @@ export default class EncounterStateHandler {
         encounterClone.focusedCombatantIndex = newIndex
         
         if (encounterClone.combatants[newIndex].hp === 0) {
-            this.nextCombatant(encounterClone)
+            this.nextCombatant()
             return
         }
 
         this.updateEncounter(encounterClone)
     }
 
-    public prevCombatant(curr: Encounter,) {
-        if (curr.turns <= 1) return
+    public prevCombatant() {
+        if (this.curr.turns <= 1) return
 
-        const encounterClone = structuredClone(curr) as Encounter
+        const encounterClone = structuredClone(this.curr) as Encounter
         const isFirstCombatant = encounterClone.currentCombatantIndex === 0
         const newIndex = isFirstCombatant ? encounterClone.combatants.length - 1 : (encounterClone.currentCombatantIndex ?? 0) - 1
         
@@ -95,15 +104,15 @@ export default class EncounterStateHandler {
         encounterClone.focusedCombatantIndex = newIndex
 
         if (encounterClone.combatants[newIndex].hp === 0) {
-            this.prevCombatant(encounterClone)
+            this.prevCombatant()
             return
         }
 
         this.updateEncounter(encounterClone)
     }
 
-    public changeFocus(curr: Encounter, combatantId: string) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public changeFocus(combatantId: string) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         const combatantIndex = encounterClone.combatants.findIndex(combatant => combatant.id === combatantId)
 
         if (combatantIndex !== -1) {
@@ -113,47 +122,47 @@ export default class EncounterStateHandler {
         this.updateEncounter(encounterClone)
     }
 
-    public updateInitiative(curr: Encounter, combatantId: string, initiative: string) {
+    public updateInitiative(combatantId: string, initiative: string) {
         const parsedInitiative = parseInt(initiative)
         if (isNaN(parsedInitiative)) return
 
-        const encounterClone = structuredClone(curr) as Encounter
+        const encounterClone = structuredClone(this.curr) as Encounter
         const combatant = encounterClone.combatants.find(combatant => combatant.id === combatantId)
 
         if (combatant) {
             combatant.initiative = parsedInitiative
         }
 
-        this.updateEncounterDeferred(curr, encounterClone)
+        this.updateEncounterDeferred(encounterClone)
     }
 
-    public updateHp(curr: Encounter, combatantId: string, hp: string) {
+    public updateHp(combatantId: string, hp: string) {
         const parsedHp = parseInt(hp)
         if (isNaN(parsedHp)) return
 
-        const encounterClone = structuredClone(curr) as Encounter
+        const encounterClone = structuredClone(this.curr) as Encounter
         const combatant = encounterClone.combatants.find(combatant => combatant.id === combatantId)
 
         if (combatant) {
             combatant.hp = parsedHp
         }
 
-        this.updateEncounterDeferred(curr, encounterClone)
+        this.updateEncounterDeferred(encounterClone)
     }
 
-    public updateNotes(curr: Encounter, combatantId: string, notes: string) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public updateNotes(combatantId: string, notes: string) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         const combatant = encounterClone.combatants.find(combatant => combatant.id === combatantId)
 
         if (combatant) {
             combatant.notes = notes
         }
 
-        this.updateEncounterDeferred(curr, encounterClone)
+        this.updateEncounterDeferred(encounterClone)
     }
 
-    public toggleCondition(curr: Encounter, combatantId: string, condition: Condition) {
-        const encounterClone = structuredClone(curr) as Encounter
+    public toggleCondition(combatantId: string, condition: Condition) {
+        const encounterClone = structuredClone(this.curr) as Encounter
         const combatant = encounterClone.combatants.find(combatant => combatant.id === combatantId)
         if (!combatant) return
 

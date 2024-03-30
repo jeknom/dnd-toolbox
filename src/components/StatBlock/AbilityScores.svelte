@@ -3,7 +3,7 @@
 	import AbilityScore from "./AbilityScore.svelte";
 
 	export let block: StatBlock;
-	const { str, dex, con, int, wis, cha } = block.abilityScores;
+	$: ({ str, dex, con, int, wis, cha } = block.abilityScores)
 </script>
 
 <div class="flex flex-row gap-4">

@@ -85,6 +85,8 @@ export const CombatantSchema = z.object({
     player: PlayerSchema.optional(),
 })
 
+export type Combatant = z.infer<typeof CombatantSchema>
+
 export const EncounterSchema = z.object({
     combatants: CombatantSchema.array(),
     currentCombatantIndex: z.number().min(0, { message: VALUE_ZERO_OR_ABOVE_MESSAGE }).nullable(),

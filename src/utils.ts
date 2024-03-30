@@ -1,6 +1,6 @@
 import { Notice, Vault } from "obsidian";
 import { APP_NAME, DEFAULT_STORE, STORE_FILENAME } from "./constants";
-import { CampaignStore, CampaignStoreSchema } from "./types";
+import { CampaignStore, CampaignStoreSchema, Encounter } from "./types";
 
 /**
  * Get a random number between the min and max values
@@ -52,4 +52,20 @@ export async function writeCampaignStoreToDisk(vault: Vault, newStore: CampaignS
     } else {
         throw validation.error
     }
+}
+
+export function getCurrentCombatant(encounter: Encounter) {
+    if (encounter.currentCombatantIndex === null) {
+        return null
+    }
+
+    return encounter.combatants[encounter.currentCombatantIndex]
+}
+
+export function getFocusedCombatant(encounter: Encounter) {
+    if (encounter.focusedCombatantIndex === null) {
+        return null
+    }
+
+    return encounter.combatants[encounter.focusedCombatantIndex]
 }

@@ -6,8 +6,8 @@
 	import ActionList from "./ActionList.svelte";
 	import Dice from "../Dice/Dice.svelte";
 
-	export let block: StatBlock;
-	const { ac, hp } = block;
+	export let block: StatBlock
+	$: ({ name, ac, hp, actions, bonusActions, abilites, legendary, speeds, senses, languages } = block)
 </script>
 
 <div class="relative flex gap-2 flex-col bg-orange-100 p-2 rounded-md pb-24">
@@ -20,39 +20,39 @@
 				<span class="hb"><span class="hst">Hit Points</span> {hp}</span>
 				<span class="hb">
 					<span class="hst">Speed</span>
-					{#if block.speeds?.ground}{block.speeds.ground} ft.,{/if} {Object.entries(block.speeds ?? {}).filter(([speed]) => speed !== 'ground').map(([speed, distance]) => distance && `${speed} ${distance} ft.`).filter(Boolean).join(', ')}
+					{#if speeds?.ground}{speeds.ground} ft.,{/if} {Object.entries(speeds ?? {}).filter(([speed]) => speed !== 'ground').map(([speed, distance]) => distance && `${speed} ${distance} ft.`).filter(Boolean).join(', ')}
 				</span>
 			</div>
 			<Separator />
 			<AbilityScores block={block} />
 			<Separator />
 			<div class="flex flex-col leading-4 gap-1">
-				{#if block.senses}
+				{#if senses}
 					<span class="hb">
 						<span class="hst">Senses</span>
-						{Object.entries(block.senses ?? {}).map(([sense, distance]) => distance && `${sense} ${distance} ft.`).filter(Boolean).join(', ')}
+						{Object.entries(senses ?? {}).map(([sense, distance]) => distance && `${sense} ${distance} ft.`).filter(Boolean).join(', ')}
 					</span>
 				{/if}
-				{#if block.languages}
+				{#if languages}
 					<span class="hb">
 						<span class="hst">Languages</span>
-						{block.languages?.join(', ')}
+						{languages?.join(', ')}
 					</span>
 				{/if}
 			</div>
 			<Separator />
-			{#if block.legendary}
+			{#if legendary}
 				<span class="hb2">
 					<span class="hst2">Legendary Resistance (3/Day).</span>
-					If the {block.name} fails a saving throw, it can choose to succeed instead.
+					If the {name} fails a saving throw, it can choose to succeed instead.
 				</span>
 			{/if}
 		</div>
 		<div class="flex flex-col gap-4">
-			<ActionList title="Actions" actions={block.actions} />
-			<ActionList title="Bonus Actions" actions={block.bonusActions} />
-			<ActionList title="Abilities" actions={block.abilites} />
-			<ActionList title="Legendary Actions" actions={block.legendary?.actions} />
+			<ActionList title="Actions" actions={actions} />
+			<ActionList title="Bonus Actions" actions={bonusActions} />
+			<ActionList title="Abilities" actions={abilites} />
+			<ActionList title="Legendary Actions" actions={legendary?.actions} />
 		</div>
 	</div>
 	<Dice class="absolute bottom-2 right-2" />

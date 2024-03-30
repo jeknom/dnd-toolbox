@@ -1,55 +1,43 @@
-import { CampaignStore } from "@/types";
+import { CampaignStore, Encounter } from "@/types";
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
-import Encounter from "../components/Encounter/Encounter.svelte";
+import EncounterComponent from "../components/Encounter/Encounter.svelte";
 import EncounterStateHandler from "../components/Encounter/EncounterStateHandler";
-import { loadCampaignStoreFromDisk, writeCampaignStoreToDisk } from "@/utils";
+import { getCurrentCombatant, getFocusedCombatant, loadCampaignStoreFromDisk, writeCampaignStoreToDisk } from "@/utils";
 import { ENCOUNTER_VIEW } from "@/constants";
+import encounterHandlerStore from "@/components/Encounter/encounterHandlerStore";
+import encounterStore from "@/components/Encounter/encounterStore";
 
 export class EncounterView extends ItemView {
-    handler: EncounterStateHandler
-
     constructor(public leaf: WorkspaceLeaf) {
         super(leaf)
     }
 
-    async onOpen() {
-        const { contentEl } = this;
-        
-        new Promise<CampaignStore>(async (resolve, reject) => {
-            try {
-                const store = await loadCampaignStoreFromDisk(this.app.vault)
-                resolve(store)
-            } catch (e) {
-                reject()
-            }
-            
-        })
-        .then((store) => {
-            this.handler = new EncounterStateHandler(
-                store.lastEncounter,
-                async (encounter) => {
-                    const newStore = store
-                    newStore.lastEncounter = encounter
+    async writeEncounterToDisc(curr: CampaignStore, encounter: Encounter) {
+        curr.lastEncounter = encounter
 
-                    await writeCampaignStoreToDisk(this.app.vault, newStore)
-                }
-            )
-
-            new Encounter({
-                target: contentEl,
-                props: {
-                    handler: this.handler,
-                    players: store.players,
-                    monsters: store.npcs
-                }
-            })
-        
-        })
-        .catch((e) => {
-            new Notice("Error loading campaign store")
+        try {
+            await writeCampaignStoreToDisk(this.app.vault, curr)
+        } catch (e) {
             console.error(e)
+            new Notice("Unexpected error while loading campaign store. It has been logged to dev console.")
             this.onClose()
+        }
+    }
+
+    async onOpen() {
+        const campaignStore = await loadCampaignStoreFromDisk(this.app.vault)
+
+        encounterStore.set({
+            encounter: campaignStore.lastEncounter,
+            players: campaignStore.players,
+            npcs: campaignStore.npcs,
+            currentCombatant: getCurrentCombatant(campaignStore.lastEncounter),
+            focusedCombatant: getFocusedCombatant(campaignStore.lastEncounter)
         })
+
+        encounterHandlerStore.set(new EncounterStateHandler(async (enc) => await this.writeEncounterToDisc(campaignStore, enc)))
+
+        new EncounterComponent({ target: this.contentEl })
     }
 
     getViewType(): string {
