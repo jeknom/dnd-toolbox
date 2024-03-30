@@ -1,12 +1,18 @@
 # RP Toolbox
 
-This is a plugin for Obsidian which helps the user run a role play campaigns. Currently, this plugin is setup to only support DnD 5e. The plugin is setup in a way where it is easy to generate content for your campaigns with ChatGPT or some other LLM that can write JSON.
+RP Toolbox is a plugin for Obsidian designed to assist with running role-playing campaigns, specifically for DnD 5e. It provides features to generate content for your campaigns using ChatGPT or other language models that can write JSON.
 
 <img src="./rp-toolbox-logo.webp" alt="Logo" width="300" height="300">
 
-# Installation
+## Installation
 
-Right now, you will need some understanding of Obsidian plugins. Clone the repo, build the plugin and drag and drop the `main.js`, `main.css` and `manifest.json` to your plugins folder.
+To install RP Toolbox, follow these steps:
+
+1. Download the latest `toolbox.zip` from the release assets on the GitHub page.
+2. Create a `rp-toolbox` folder in `{pathToYourObsidianVault}/.obsidian/plugins`.
+3. Extract the files from `toolbox.zip` into the `rp-toolbox` folder.
+4. Make sure you have enabled community plugins in Obsidian.
+5. That is it, you should be able to use the plugin now
 
 # Features
 
