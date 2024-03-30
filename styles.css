@@ -660,6 +660,10 @@ video {
   justify-content: center;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 .gap-1 {
   gap: 0.25rem;
 }
@@ -779,6 +783,11 @@ video {
   color: rgb(250 204 21 / var(--tw-text-opacity));
 }
 
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
+}
+
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
@@ -791,6 +800,14 @@ label {
 
 button {
   padding: 0.5rem 1rem;
+}
+
+select {
+  padding: 0.2rem;
+}
+
+textarea {
+  padding: 0.2rem;
 }
 
 .ht {
