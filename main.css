@@ -12,6 +12,14 @@ button {
     padding: 0.5rem 1rem;
 }
 
+select {
+    padding: 0.2rem;
+}
+
+textarea {
+    padding: 0.2rem;
+}
+
 .ht {
     color: darkred;
     font-weight: 600;

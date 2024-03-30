@@ -1,6 +1,6 @@
 import { Notice, Vault } from "obsidian";
-import { APP_NAME, DEFAULT_STORE, STORE_FILENAME } from "./constants";
-import { CampaignStore, CampaignStoreSchema, Encounter } from "./types";
+import { APP_NAME, DEFAULT_STORE, EXAMPLE_EASY_NPC, EXAMPLE_LEGENDARY_NPC, EXAMPLE_MEDIUM_NPC, STORE_FILENAME } from "./constants";
+import { CampaignStore, CampaignStoreSchema, Difficulty, Encounter } from "./types";
 
 /**
  * Get a random number between the min and max values
@@ -68,4 +68,15 @@ export function getFocusedCombatant(encounter: Encounter) {
     }
 
     return encounter.combatants[encounter.focusedCombatantIndex]
+}
+
+export const createAIStatBlockGeneratePrompt = (name: string, description: string, groupLevel: number, groupSize: number, desiredDifficulty: Difficulty | string) => {
+    const context1 = `Create a stat block for a dungeons and dragons 5e creature who goes by the name of ${name}. The following is a description of the creature: "${description}"\n\n`
+    const context2 = `The stat block needs to be JSON and follow specific format rules. Please ensure that the stat block is valid JSON and follows the format rules. Here are examples of valid stat blocks:\n\n`
+    const context3 = `${JSON.stringify(EXAMPLE_EASY_NPC, null, 4)}\n\n`
+    const context4 = `${JSON.stringify(EXAMPLE_MEDIUM_NPC, null, 4)}\n\n`
+    const context5 = `${JSON.stringify(EXAMPLE_LEGENDARY_NPC, null, 4)}\n\n`
+    const context6 = `Scale the creature so that it provides a ${desiredDifficulty} challenge for a group of ${groupSize} players who are all level ${groupLevel}.`
+
+    return `${context1}${context6}${context2}${context3}${context4}${context5}`
 }

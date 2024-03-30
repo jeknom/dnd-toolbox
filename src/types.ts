@@ -3,6 +3,7 @@ import { CONDITIONS, LANGUAGES, MONSTER_TYPES, SIZES } from './constants'
 
 const REQUIRED_MESSAGE = 'Property is required'
 const VALUE_ZERO_OR_ABOVE_MESSAGE = 'Value needs to be more or equal to zero'
+export type Difficulty = "easy" | "medium" | "hard" | "deadly"
 
 const MonsterType = z.enum(MONSTER_TYPES)
 const MonsterSize = z.enum(SIZES)
