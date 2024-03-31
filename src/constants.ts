@@ -307,6 +307,70 @@ export const EXAMPLE_LEGENDARY_NPC: StatBlock = {
     }
 }
 
+export const EXAMPLE_FOR_AI_PROMPT = `
+{
+    "id": "1", // Unique identifier for the stat block
+    "name": "Dragon", // Name of the creature
+    "ac": 18, // Armor Class
+    "hp": 200, // Hit Points
+    "speeds": { // Speeds in feet per round. Omit the any of the properties if the creature can't move that way
+        "ground": 30,
+        "fly": 60,
+        "swim": 20,
+        "climb": 20
+    },
+    "abilityScores": { // DnD 5e ability scores
+        "str": 20,
+        "dex": 10,
+        "int": 14,
+        "wis": 12,
+        "cha": 16,
+        "con": 18
+    },
+    "alignment": "Chaotic Evil", // Alignment of the creature
+    "type": "Dragon", // Options: "Other", "Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"
+    "size": "Large", // Options: "Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"
+    "languages": ["Common", "Draconic"], // Options: "Abyssal", "All", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Undercommon", "Other"
+    "senses": { // Omit the any of the properties if the creature doesn't have that sense
+        "blindsight": 60,
+        "darkvision": 120,
+        "tremorsense": 20,
+        "truesight": 30
+    },
+    "actions": [ // Omitted if the creature has no actions
+        {
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage."
+        },
+        {
+            "name": "Tail",
+            "description": "Melee Weapon Attack: +17 to hit, reach 20 ft., one target. Hit: 19 (2d8 + 10) bludgeoning damage."
+        }
+    ],
+    "bonusActions": [ // Omitted if the creature has no bonus actions
+        {
+            "name": "Claw Swipe",
+            "description": "The dragon makes a claw swipe attack as a bonus action."
+        }
+    ],
+    "abilities": [ // Special abilities, reactions, and lair actions the creature can take, can be omitted if the creature has no abilities
+        {
+            "name": "Frightful Presence",
+            "description": "Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+        }
+    ],
+    "legendary": { // Omitted if the creature is not legendary
+        "hasResistance": true, // Whether the creature has legendary resistance
+        "actions": [ // Legendary actions the creature can take
+            {
+                "name": "Tail Attack",
+                "description": "The dragon makes a tail attack."
+            }
+        ]
+    }
+}
+`
+
 export const DEFAULT_STORE: CampaignStore = {
     npcs: [
         EXAMPLE_EASY_NPC,

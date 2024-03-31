@@ -6,12 +6,13 @@
 	import ActionList from "./ActionList.svelte";
 	import Dice from "../Dice/Dice.svelte";
 
+	export let singleColumn = false
 	export let block: StatBlock
 	$: ({ name, ac, hp, actions, bonusActions, abilites, legendary, speeds, senses, languages } = block)
 </script>
 
 <div class="relative flex gap-2 flex-col bg-orange-100 p-2 rounded-md pb-24">
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+	<div class="grid {singleColumn ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'} gap-4">
 		<div class="flex flex-col gap-4">
 			<Title {block} />
 			<Separator />

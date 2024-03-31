@@ -1,5 +1,5 @@
 import { App, Modal } from "obsidian";
-import StatBlockModalContent from "./StatBlockModalContent.svelte";
+import StatBlockModalContent from "./NpcsModalContent.svelte"
 
 export default class StatBlockModal extends Modal {
     constructor(app: App) {
