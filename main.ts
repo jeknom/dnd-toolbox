@@ -7,18 +7,21 @@ import PlayersModal from '@/components/Players/PlayersModal';
 import { EncounterView } from '@/views/EncounterView';
 import svelteCampaignStore from '@/svelteCampaignStore';
 import { CampaignStore } from '@/types';
-import StatBlockModal from '@/components/StatBlock/StatBlockModal';
+import NpcsModal from '@/components/NPCs/NpcsModal';
+import { SettingsTab } from '@/SettingsTab';
+import settingsStore from '@/settingsStore';
+import OpenAI from 'openai';
 
-interface MyPluginSettings {
-	mySetting: string;
+interface PluginSettings {
+	openaiApiKey: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: PluginSettings = {
+	openaiApiKey: ''
 }
 
 export default class RPToolboxPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settings: PluginSettings;
 	updateDebounceTimeoutId?: number
 
 	handleUpdateDeferred(currentStore: CampaignStore, updateFn: (store: CampaignStore) => CampaignStore) {
@@ -77,6 +80,7 @@ export default class RPToolboxPlugin extends Plugin {
 		await this.loadSettings()
 		await this.refreshAll()
 		
+		this.addSettingTab(new SettingsTab(this.app, this));
 		this.registerView(ENCOUNTER_VIEW, (leaf) => new EncounterView(leaf))
 
 		this.addRibbonIcon('sword', APP_NAME, (e) => {
@@ -93,7 +97,7 @@ export default class RPToolboxPlugin extends Plugin {
 			menu.addItem((item) => {
 				item.setTitle('NPCs')
 				item.onClick(() => {
-					new StatBlockModal(this.app)
+					new NpcsModal(this.app)
 					.open()
 				})
 			})
@@ -140,6 +144,11 @@ export default class RPToolboxPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+
+		settingsStore.update((store) => ({ ...store, openAiClient: new OpenAI({
+			apiKey: this.settings.openaiApiKey,
+			dangerouslyAllowBrowser: true
+		}) }));
 	}
 
 	async saveSettings() {

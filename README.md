@@ -13,6 +13,7 @@ To install RP Toolbox, follow these steps:
 3. Extract the files from `toolbox.zip` into the `rp-toolbox` folder.
 4. Make sure you have enabled community plugins in Obsidian.
 5. That is it, you should be able to use the plugin now
+6. (Optional) You can add your OpenAI API key to the plugin settings to automatically generate content
 
 # Features
 
