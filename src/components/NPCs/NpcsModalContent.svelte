@@ -95,13 +95,12 @@
 			isGeneratingResponse = true
 
 			const completion = await openAiClient.chat.completions.create({
-				model: "gpt-3.5-turbo-0125",
+				model,
 				messages: [{ role: 'user', content: createAIStatBlockGeneratePrompt(name, description, groupLevel, groupSize, desiredDifficulty) }],
 				max_tokens: 4096,
 				response_format: { type: 'json_object' }
 			})
 
-			console.log({completion})
 			statBlockJson = statBlockJson.concat(completion.choices[0]?.message.content || '')
 			statBlockValidation = getValidation(statBlockJson);
 		} catch (e) {
@@ -113,10 +112,8 @@
 	}
 
 	const handleModelChange = (value: string) => {
-		if (value === 'gpt-3.5-turbo') {
-			model = 'gpt-3.5-turbo'
-		} else if (value === 'gpt-4') {
-			model = 'gpt-4'
+		if (value === 'gpt-3.5-turbo' || value === 'gpt-4-0125-preview') {
+			model = value
 		} else {
 			console.error('Unknown model', value)
 			new Notice('Unknown model')
@@ -139,7 +136,7 @@
       </select>
 	<select on:change={(e) => handleModelChange(e.currentTarget.value)}>
 		<option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-		<option value="gpt-4">GPT-4</option>
+		<option value="gpt-4-0125-preview">GPT-4 Turbo</option>
 	</select>
 	<button disabled={isGeneratingResponse} on:click={handleGenerateContentFromOpenAI}>{isGeneratingResponse ? 'Generating...' : 'Generate'}</button>
     <button on:click={() => {

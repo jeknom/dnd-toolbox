@@ -105,4 +105,4 @@ export const CampaignStoreSchema = z.object({
 
 export type CampaignStore = z.infer<typeof CampaignStoreSchema>
 
-export type Model = 'gpt-3.5-turbo' | 'gpt-4'
+export type Model = 'gpt-3.5-turbo' | 'gpt-4-0125-preview'
