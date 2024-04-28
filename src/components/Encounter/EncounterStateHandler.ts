@@ -74,8 +74,8 @@ export default class EncounterStateHandler {
         this.updateEncounter(encounterClone)
     }
 
-    public nextCombatant() {
-        const encounterClone = structuredClone(this.curr) as Encounter
+    public nextCombatant(encounter?: Encounter) {
+        const encounterClone = encounter ?? structuredClone(this.curr) as Encounter
         const isLastCombatant = encounterClone.currentCombatantIndex === encounterClone.combatants.length - 1
         const isFirstTurn = encounterClone.turns === 0
         const newIndex = isFirstTurn ? 0 : isLastCombatant ? 0 : (encounterClone.currentCombatantIndex ?? 0) + 1
@@ -85,17 +85,18 @@ export default class EncounterStateHandler {
         encounterClone.focusedCombatantIndex = newIndex
         
         if (encounterClone.combatants[newIndex].hp === 0) {
-            this.nextCombatant()
+            console.log('Got here', encounterClone.combatants[newIndex])
+            this.nextCombatant(encounterClone)
             return
         }
 
         this.updateEncounter(encounterClone)
     }
 
-    public prevCombatant() {
+    public prevCombatant(encounter?: Encounter) {
         if (this.curr.turns <= 1) return
 
-        const encounterClone = structuredClone(this.curr) as Encounter
+        const encounterClone = encounter ?? structuredClone(this.curr) as Encounter
         const isFirstCombatant = encounterClone.currentCombatantIndex === 0
         const newIndex = isFirstCombatant ? encounterClone.combatants.length - 1 : (encounterClone.currentCombatantIndex ?? 0) - 1
         
@@ -104,7 +105,7 @@ export default class EncounterStateHandler {
         encounterClone.focusedCombatantIndex = newIndex
 
         if (encounterClone.combatants[newIndex].hp === 0) {
-            this.prevCombatant()
+            this.prevCombatant(encounterClone)
             return
         }
 
