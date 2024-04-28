@@ -63,8 +63,11 @@
 			<span>{conditions.join(", ")}</span>
 		</div>
 	{/if}
-	<button
-		class="absolute top-2 right-2"
-		on:click={() => handler?.removeCombatant(id)}><X /></button
+	<span
+		class="absolute top-2 right-2 hover:text-red-300 text-red-100"
+		role='button'
+		tabindex="0"
+		on:keypress={(e) => e.key === "Enter" && handler?.removeCombatant(id)}
+		on:click={() => handler?.removeCombatant(id)}><X /></span
 	>
 </div>

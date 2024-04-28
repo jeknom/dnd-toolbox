@@ -20,10 +20,12 @@
 
 <div class="relative grid grid-cols-10 gap-4 pb-24 h-full w-full">
 	<Sidebar />
-	<div class="flex flex-col gap-2 left-2 col-span-2 overflow-y-auto">
-		<Status />
-		<Navigation />
-		<div class="flex flex-col gap-1">
+	<div class="relative overflow-y-auto col-span-2">
+		<div class="sticky flex flex-col gap-2 top-0 left-0 z-10 bg-stone-900 rounded-b-md shadow-md p-2">
+			<Status />
+			<Navigation />
+		</div>
+		<div class="flex flex-col gap-1 mt-8">
 			{#each combatants as combatant (combatant.id)}
 				<Combatant combatant={combatant} />
 			{/each}
