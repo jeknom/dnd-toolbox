@@ -42,7 +42,7 @@
 				{/if}
 			</div>
 			<Separator />
-			{#if legendary}
+			{#if legendary?.hasResistance}
 				<span class="hb2">
 					<span class="hst2">Legendary Resistance (3/Day).</span>
 					If the {name} fails a saving throw, it can choose to succeed instead.
