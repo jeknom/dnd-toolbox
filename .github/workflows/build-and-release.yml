@@ -27,7 +27,7 @@ jobs:
 
       - name: Zip files
         run: |
-          zip toolbox.zip main.js main.css manifest.json
+          zip toolbox.zip main.js styles.css manifest.json
 
       - name: Create release
         id: create_release
