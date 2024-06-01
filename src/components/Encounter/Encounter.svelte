@@ -18,9 +18,8 @@
 	encounterHandlerStore.subscribe((h) => (handler = h));
 </script>
 
-<div class="relative grid grid-cols-10 gap-4 pb-24 h-full w-full">
-	<Sidebar />
-	<div class="relative overflow-y-auto col-span-2">
+<div class="flex flex-row gap-4 pb-24 h-full w-full">
+	<div class="relative min-w-[300px] overflow-y-auto col-span-2">
 		<div class="sticky flex flex-col gap-2 top-0 left-0 z-10 bg-stone-900 rounded-b-md shadow-md p-2">
 			<Status />
 			<Navigation />
@@ -32,4 +31,5 @@
 		</div>
 	</div>
 	<FocusView />
+	<Sidebar />
 </div>
