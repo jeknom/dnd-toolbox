@@ -1,16 +1,17 @@
 import { Menu, Plugin, WorkspaceLeaf } from 'obsidian';
 import StatBlock from './src/components/StatBlock/StatBlock.svelte'
-import { APP_NAME, BLOCK_PREVIEW_LANG, ENCOUNTER_VIEW } from 'src/constants';
+import { APP_NAME, BLOCK_PREVIEW_LANG, ENCOUNTER_VIEW, NPCS_VIEW } from 'src/constants';
 import { loadCampaignStoreFromDisk, writeCampaignStoreToDisk } from 'src/utils';
 import { createInsertStatBlockCommand } from '@/commands';
 import PlayersModal from '@/components/Players/PlayersModal';
 import { EncounterView } from '@/views/EncounterView';
 import svelteCampaignStore from '@/svelteCampaignStore';
 import { CampaignStore } from '@/types';
-import NpcsModal from '@/components/NPCs/NpcsModal';
+import NpcsModal from '@/components/NPCs/NpcsView';
 import { SettingsTab } from '@/SettingsTab';
 import settingsStore from '@/settingsStore';
 import OpenAI from 'openai';
+import { Leaf } from 'lucide-svelte';
 
 interface PluginSettings {
 	openaiApiKey: string;
@@ -82,6 +83,7 @@ export default class RPToolboxPlugin extends Plugin {
 		
 		this.addSettingTab(new SettingsTab(this.app, this));
 		this.registerView(ENCOUNTER_VIEW, (leaf) => new EncounterView(leaf))
+		this.registerView(NPCS_VIEW, (leaf) => new NpcsModal(leaf))
 
 		this.addRibbonIcon('sword', APP_NAME, (e) => {
 			const menu = new Menu()
@@ -96,9 +98,11 @@ export default class RPToolboxPlugin extends Plugin {
 
 			menu.addItem((item) => {
 				item.setTitle('NPCs')
-				item.onClick(() => {
-					new NpcsModal(this.app)
-					.open()
+				item.onClick(async () => {
+					const leaf = this.app.workspace.getLeaf("window")
+					await leaf.setViewState({ type: NPCS_VIEW })
+					this.app.workspace.setActiveLeaf(leaf, { focus: true });
+					this.app.workspace.revealLeaf(leaf)
 				})
 			})
 
@@ -115,7 +119,7 @@ export default class RPToolboxPlugin extends Plugin {
 						await leaf.setViewState({ type: ENCOUNTER_VIEW })
 					}
 					
-					await this.app.workspace.setActiveLeaf(leaf, { focus: true });
+					this.app.workspace.setActiveLeaf(leaf, { focus: true });
 					this.app.workspace.revealLeaf(leaf)
 				})
 			})

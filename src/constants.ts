@@ -5,6 +5,7 @@ export const STORE_FILENAME = 'campaignstore.json'
 export const BLOCK_PREVIEW_LANG = 'rp-block'
 export const APP_NAME = 'RP Toolbox'
 export const ENCOUNTER_VIEW = 'encounter-view'
+export const NPCS_VIEW = 'npcs-view'
 
 export const SIZES = [
     'Tiny',
